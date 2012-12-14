@@ -10,7 +10,8 @@ module Skeptick
 
       def _finalize
         @parts += _process_images(@images)
-        @parts << '-compose' << @blending
+        @parts << '-compose'
+        @parts << @blending unless @blending.strip == ''
         @parts += @ops
         @parts << '-composite'
         @parts << "-write #{@write}" if @write
