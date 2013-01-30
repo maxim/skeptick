@@ -1,4 +1,5 @@
 require_relative 'test_helper'
+require 'skeptick/sugar'
 
 # DISCLAIMER
 # These tests are not examples of proper usage of ImageMagick.
@@ -6,11 +7,6 @@ require_relative 'test_helper'
 # test the logic of building strings.
 class ComposeTest < MiniTest::Unit::TestCase
   include Skeptick
-
-  def test_minimal_compose
-    cmd = compose
-    assert_equal 'convert -compose -composite miff:-', cmd.to_s
-  end
 
   def test_compose_with_blending
     cmd = compose(:over)
@@ -64,22 +60,22 @@ class ComposeTest < MiniTest::Unit::TestCase
 
   def test_compose_with_ops
     cmd = compose(:over) { with '-foo' }
-    assert_equal 'convert -compose over -foo -composite miff:-', cmd.to_s
+    assert_equal 'convert -foo -compose over -composite miff:-', cmd.to_s
   end
 
   def test_compose_with_concatenated_ops
     cmd = compose(:over) { with '-foo', 'bar' }
-    assert_equal 'convert -compose over -foo bar -composite miff:-', cmd.to_s
+    assert_equal 'convert -foo bar -compose over -composite miff:-', cmd.to_s
   end
 
   def test_compose_with_multiple_ops
     cmd = compose(:over) { with '-foo'; with '+bar' }
-    assert_equal 'convert -compose over -foo +bar -composite miff:-', cmd.to_s
+    assert_equal 'convert -foo +bar -compose over -composite miff:-', cmd.to_s
   end
 
   def test_compose_with_multiple_concatenated_ops
     cmd = compose(:over) { with '-foo', 'bar'; with '+baz', 'qux' }
-    assert_equal 'convert -compose over -foo bar +baz qux -composite miff:-',
+    assert_equal 'convert -foo bar +baz qux -compose over -composite miff:-',
       cmd.to_s
   end
 
@@ -90,7 +86,7 @@ class ComposeTest < MiniTest::Unit::TestCase
       with '-corge', 'grault'
     end
 
-    assert_equal 'convert foo bar qux -compose over +quux -corge grault ' +
+    assert_equal 'convert foo bar qux +quux -corge grault -compose over ' +
       '-composite baz', cmd.to_s
   end
 
@@ -99,7 +95,7 @@ class ComposeTest < MiniTest::Unit::TestCase
       compose(:multiply, 'foo') { with 'bar' }
     end
 
-    assert_equal 'convert ( foo -compose multiply bar -composite ) -compose ' +
+    assert_equal 'convert ( foo bar -compose multiply -composite ) -compose ' +
       'over -composite baz', cmd.to_s
   end
 
@@ -108,7 +104,7 @@ class ComposeTest < MiniTest::Unit::TestCase
       compose(:multiply, 'foo', to: 'nowhere') { with 'bar' }
     end
 
-    assert_equal 'convert ( foo -compose multiply bar -composite ) -compose ' +
+    assert_equal 'convert ( foo bar -compose multiply -composite ) -compose ' +
       'over -composite baz', cmd.to_s
   end
 
@@ -123,8 +119,8 @@ class ComposeTest < MiniTest::Unit::TestCase
       with '-resize'
     end
 
-    assert_equal 'convert foo ( qux -compose multiply +asdf +fdsa ' +
-      '-composite ) bleh -compose over -resize -composite bar', cmd.to_s
+    assert_equal 'convert foo ( qux +asdf +fdsa -compose multiply ' +
+      '-composite ) bleh -resize -compose over -composite bar', cmd.to_s
   end
 
   def test_compose_composition
@@ -139,8 +135,8 @@ class ComposeTest < MiniTest::Unit::TestCase
       with '-resize'
     end
 
-    assert_equal 'convert foo ( qux -compose over +asdf +fdsa -composite ) ' +
-      'bleh -compose multiply -resize -composite bar', cmd.to_s
+    assert_equal 'convert foo ( qux +asdf +fdsa -compose over -composite ) ' +
+      'bleh -resize -compose multiply -composite bar', cmd.to_s
   end
 
   def test_compose_double_nesting_with_composition
@@ -162,8 +158,8 @@ class ComposeTest < MiniTest::Unit::TestCase
       with '-option', 'quux'
     end
 
-    assert_equal 'convert ( ( ( image1 -compose baz -option qux -composite ' +
-      ') image2 -compose bar +option -composite ) -compose foo -composite ) ' +
-      'image4 -compose image3 -option quux -composite miff:-', cmd.to_s
+    assert_equal 'convert ( ( ( image1 -option qux -compose baz -composite ' +
+      ') image2 +option -compose bar -composite ) -compose foo -composite ) ' +
+      'image4 -option quux -compose image3 -composite miff:-', cmd.to_s
   end
 end

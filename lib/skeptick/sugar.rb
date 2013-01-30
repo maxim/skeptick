@@ -1,0 +1,8 @@
+require 'skeptick/sugar/composition'
+require 'skeptick/sugar/debugging'
+require 'skeptick/sugar/drawing'
+require 'skeptick/sugar/geometry'
+require 'skeptick/sugar/resizing'
+require 'skeptick/sugar/sequence_manipulation'
+require 'skeptick/sugar/formatting'
+require 'skeptick/sugar/edges'

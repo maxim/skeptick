@@ -1,3 +1,3 @@
 require 'bundler/setup'
-require 'skeptick'
+require 'skeptick/core'
 require 'minitest/autorun'

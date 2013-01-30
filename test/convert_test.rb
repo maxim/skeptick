@@ -9,7 +9,7 @@ class ConvertTest < MiniTest::Unit::TestCase
 
   def test_dsl_methods_available
     assert_respond_to self, :convert
-    assert_respond_to self, :compose
+    assert_respond_to self, :image
     assert_respond_to self, :pipe
   end
 
