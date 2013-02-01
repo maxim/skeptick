@@ -10,4 +10,7 @@ module Skeptick
   end
 
   include Sugar::Resizing
+
+  class   Image::DslContext; include Sugar::Resizing end
+  class Convert::DslContext; include Sugar::Resizing end
 end

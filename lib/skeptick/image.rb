@@ -1,64 +1,65 @@
 require 'skeptick/helper'
 require 'skeptick/convert'
-require 'skeptick/pipe'
+require 'skeptick/chain'
 require 'skeptick/image/dsl_context'
 
 module Skeptick
   class Image
+    attr_accessor :prepends, :appends
+
     def initialize(context, obj = nil, &blk)
       @context = context
       @obj = obj || blk
       reset
     end
 
-    attr_accessor :prepends, :appends
-    def prepend(*args); @prepends << Helper.process_args(*args) end
-    def append(*args);  @appends  << Helper.process_args(*args) end
+    def set(*args)
+      @prepends << Helper.process_args(*args)
+    end
 
-    def set_image(obj, &blk)
+    def apply(*args)
+      @appends << Helper.process_args(*args)
+    end
+
+    def image(obj, &blk)
       @image = Image.new(@context, obj, &blk)
     end
 
-    def set_nested_convert(*args, &blk)
+    def convert(*args, &blk)
       @image = Convert.new(@context, *args, &blk).become_inner
     end
 
     def process_method_missing(*args, &blk)
       @context.send(*args, &blk)
-      # result = @context.send(*args, &blk)
-
-      # case result
-      #   # Do we actually need these become_inner up in set_nested_convert,
-      #   # right here, and down in #to_s?
-      #   when Convert then @image = result.become_inner
-      #   when Image   then @image = result
-      #   else result
-      # end
     end
 
     def to_s
-      reset
+      parts.join(' ')
+    end
 
-      case @obj
-        when :pipe;   Pipe::PATH
-        when Convert; @obj.become_inner.to_s
-        when Array;   @obj.join(' ')
-        when Proc;    parts.join(' ')
-        else          @obj.to_s
-      end
+    def inspect
+      "Skeptick::Image(#{to_s})"
     end
 
     def parts
-      if @obj.is_a?(Proc)
-        reset
-        DslContext.new(self).instance_eval(&@obj)
-        [*@prepends, @image, *@appends]
-      else
-        []
+      case @obj
+      when :pipe   then [ Chain::PIPE ]
+      when Convert then @obj.become_inner.parts
+      when Image   then @obj.parts
+      when Array   then @obj
+      when Proc    then build_parts
+      else         [ @obj ]
       end
     end
 
     private
+
+      def build_parts
+        reset
+        DslContext.new(self).instance_eval(&@obj)
+        [*@prepends, @image, *@appends].compact
+      end
+
       def reset
         @image    = nil
         @prepends = []

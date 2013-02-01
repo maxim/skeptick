@@ -38,11 +38,18 @@ module Skeptick
     end
   end
 
+  # Include compose into external context
   include Sugar::Composition::Helper
 
+  # Include compose into Image's and Convert's DSL context
   class   Image::DslContext; include Sugar::Composition::Helper end
   class Convert::DslContext; include Sugar::Composition::Helper end
 
+  # Include compose into Image and Convert objects
+  class   Image; include Sugar::Composition::Helper end
+  class Convert; include Sugar::Composition::Helper end
+
+  # Include operators into Image and Convert objects
   class   Image; include Sugar::Composition::Operators end
   class Convert; include Sugar::Composition::Operators end
 end

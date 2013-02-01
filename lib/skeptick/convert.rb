@@ -1,11 +1,15 @@
 require 'skeptick/helper'
 require 'skeptick/image'
-require 'skeptick/pipe'
+require 'skeptick/chain'
 require 'skeptick/convert/dsl_context'
-require 'skeptick/execution'
+require 'skeptick/command'
 
 module Skeptick
   class Convert
+    include Command::Executable
+
+    attr_accessor :prepends, :appends
+
     def initialize(context, *args, &blk)
       @context = context
       @options = Helper.extract_options!(args)
@@ -22,18 +26,28 @@ module Skeptick
       reset
     end
 
-    attr_accessor :prepends, :appends
-    def prepend(*args); @prepends << Helper.process_args(*args) end
-    def append(*args);  @appends  << Helper.process_args(*args) end
-    def set(*args);     @objects  << Helper.process_args(*args) end
+    def prepend(*args)
+      @prepends << Helper.process_args(*args)
+    end
 
-    def add_nested_convert(*args, &blk)
+    def append(*args)
+      @appends << Helper.process_args(*args)
+    end
+
+    def set(*args)
+      @objects << Helper.process_args(*args)
+    end
+    alias_method :apply, :set
+    alias_method :with,  :set
+
+
+    def convert(*args, &blk)
       Convert.new(@context, *args, &blk).tap do |c_obj|
         @objects << Image.new(@context, c_obj)
       end
     end
 
-    def add_image(obj = nil, &blk)
+    def image(obj = nil, &blk)
       @objects << Image.new(@context, obj, &blk)
     end
 
@@ -43,6 +57,10 @@ module Skeptick
       else
         @to = to
       end
+    end
+
+    def piping?
+      !inner? && parts.last == Chain::PIPE
     end
 
     def become_inner
@@ -55,29 +73,20 @@ module Skeptick
       @objects = []
       DslContext.new(self).instance_eval(&@block) if @block
       wrap
-      [@beginning, *@prepends, *@args, *@objects, *@appends, @ending]
+      [@beginning, *@prepends, *@args, *@objects, *@appends, @ending].compact
     end
 
     def to_s
       parts.join(' ')
     end
 
+    def inspect
+      "Skeptick::Convert(#{to_s})"
+    end
+
     def process_method_missing(*args, &blk)
       @context.send(*args, &blk)
-
-      # result = @context.send(*args, &blk)
-
-      # case result
-      #   when Convert then image(result)
-      #   when Image   then @objects << (result)
-      #   else result
-      # end
     end
-
-    def execute
-      Execution.new(self).run
-    end
-    alias_method :build, :execute
 
     private
       def reset
@@ -88,17 +97,13 @@ module Skeptick
         @inner
       end
 
-      def piping?
-        !inner? && parts.last == Pipe::PATH
-      end
-
       def wrap
         @beginning = inner? ? '(' : 'convert'
-        @ending    = inner? ? ')' : @to || Pipe::PATH
+        @ending    = inner? ? ')' : @to || Chain::PIPE
       end
 
       def parse_pipe(obj)
-        obj == :pipe ? Pipe::PATH : obj
+        obj == :pipe ? Chain::PIPE : obj
       end
   end
 end

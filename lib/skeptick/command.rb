@@ -3,7 +3,18 @@ require 'open3'
 require 'skeptick/error'
 
 module Skeptick
-  class Execution
+  class Command
+    module Executable
+      def command
+        Command.new(self)
+      end
+
+      def execute
+        command.run
+      end
+      alias_method :build, :execute
+    end
+
     def initialize(command_obj)
       @command_obj = command_obj
     end
@@ -11,6 +22,7 @@ module Skeptick
     def command
       @command_obj.to_s.shellsplit.shelljoin
     end
+    alias_method :to_s, :command
 
     def run
       Skeptick.log(@command_obj.parts.inspect)

@@ -6,19 +6,19 @@ module Skeptick
       end
 
       def set(*args)
-        @image.prepend(*args)
+        @image.set(*args)
       end
 
       def apply(*args)
-        @image.append(*args)
+        @image.apply(*args)
       end
 
-      def image(obj = nil, &blk)
-        @image.set_image(obj, &blk)
+      def image(obj)
+        @image.image(obj)
       end
 
       def convert(*args, &blk)
-        @image.set_nested_convert(*args, &blk)
+        @image.convert(*args, &blk)
       end
 
       def method_missing(*args, &blk)

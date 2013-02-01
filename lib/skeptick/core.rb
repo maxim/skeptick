@@ -1,7 +1,7 @@
 require 'skeptick/version'
 require 'skeptick/convert'
 require 'skeptick/image'
-require 'skeptick/pipe'
+require 'skeptick/chain'
 
 module Skeptick
   def self.log(text)
@@ -21,7 +21,7 @@ module Skeptick
     Skeptick::Image.new(self, *args, &blk)
   end
 
-  def pipe(*args, &blk)
-    Skeptick::Pipe.new(self, *args, &blk)
+  def chain(*args, &blk)
+    Skeptick::Chain.new(self, *args, &blk)
   end
 end

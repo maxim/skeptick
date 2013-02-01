@@ -12,11 +12,15 @@ module Skeptick
       alias_method :with,  :set
 
       def convert(*args, &blk)
-        @convert.add_nested_convert(*args, &blk)
+        @convert.convert(*args, &blk)
       end
 
       def image(obj = nil, &blk)
-        @convert.add_image(obj, &blk)
+        @convert.image(obj, &blk)
+      end
+
+      def method_missing(*args, &blk)
+        @convert.process_method_missing(*args, &blk)
       end
     end
   end

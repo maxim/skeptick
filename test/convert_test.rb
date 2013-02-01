@@ -4,13 +4,27 @@ require_relative 'test_helper'
 # These tests are not examples of proper usage of ImageMagick.
 # In fact, most of them are entirely invalid. The point is to
 # test the logic of building strings.
-class ConvertTest < MiniTest::Unit::TestCase
+class ConvertTest < Skeptick::TestCase
   include Skeptick
 
-  def test_dsl_methods_available
+  def test_dsl_method_available
     assert_respond_to self, :convert
-    assert_respond_to self, :image
-    assert_respond_to self, :pipe
+  end
+
+  def test_lvars_from_external_context_are_accessible
+    foo = '-test'
+    cmd = convert { set foo }
+    assert_equal 'convert -test miff:-', cmd.to_s
+  end
+
+  def test_methods_from_external_context_are_accessible
+    context = Class.new do
+      include Skeptick
+      def foo; :foo end
+      def cmd; convert { set foo } end
+    end
+
+    assert_equal 'convert -foo miff:-', context.new.cmd.to_s
   end
 
   def test_minimal_convert

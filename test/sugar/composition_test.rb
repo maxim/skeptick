@@ -1,11 +1,11 @@
-require_relative 'test_helper'
-require 'skeptick/sugar'
+require_relative '../test_helper'
+require 'skeptick/sugar/composition'
 
 # DISCLAIMER
 # These tests are not examples of proper usage of ImageMagick.
 # In fact, most of them are entirely invalid. The point is to
 # test the logic of building strings.
-class ComposeTest < MiniTest::Unit::TestCase
+class CompositionTest < Skeptick::TestCase
   include Skeptick
 
   def test_compose_with_blending
@@ -161,5 +161,113 @@ class ComposeTest < MiniTest::Unit::TestCase
     assert_equal 'convert ( ( ( image1 -option qux -compose baz -composite ' +
       ') image2 +option -compose bar -composite ) -compose foo -composite ) ' +
       'image4 -option quux -compose image3 -composite miff:-', cmd.to_s
+  end
+
+  def test_plus_operator_on_image
+    lhs = image('foo')
+    rhs = image('bar')
+    result = convert(lhs + rhs)
+
+    assert_equal 'convert ( foo bar -compose over -composite ) miff:-',
+      result.to_s
+  end
+
+  def test_minus_operator_on_image
+    lhs = image('foo')
+    rhs = image('bar')
+    result = convert(lhs - rhs)
+
+    assert_equal 'convert ( foo bar -compose dstout -composite ) miff:-',
+      result.to_s
+  end
+
+  def test_multiply_operator_on_image
+    lhs = image('foo')
+    rhs = image('bar')
+    result = convert(lhs * rhs)
+
+    assert_equal 'convert ( foo bar -compose multiply -composite ) miff:-',
+      result.to_s
+  end
+
+  def test_divide_operator_on_image
+    lhs = image('foo')
+    rhs = image('bar')
+    result = convert(lhs / rhs)
+
+    assert_equal 'convert ( foo bar -compose divide -composite ) miff:-',
+      result.to_s
+  end
+
+  def test_and_operator_on_image
+    lhs = image('foo')
+    rhs = image('bar')
+    result = convert(lhs & rhs)
+
+    assert_equal 'convert ( foo bar -alpha Set -compose dstin -composite ) ' +
+      'miff:-', result.to_s
+  end
+
+  def test_or_operator_on_image
+    lhs = image('foo')
+    rhs = image('bar')
+    result = convert(lhs | rhs)
+
+    assert_equal 'convert ( foo bar -compose dstover -composite ) miff:-',
+      result.to_s
+  end
+
+  def test_plus_operator_on_convert
+    lhs = convert('foo')
+    rhs = convert('bar')
+    result = lhs + rhs
+
+    assert_equal 'convert ( foo ) ( bar ) -compose over -composite miff:-',
+      result.to_s
+  end
+
+  def test_minus_operator_on_convert
+    lhs = convert('foo')
+    rhs = convert('bar')
+    result = lhs - rhs
+
+    assert_equal 'convert ( foo ) ( bar ) -compose dstout -composite miff:-',
+      result.to_s
+  end
+
+  def test_multiply_operator_on_convert
+    lhs = convert('foo')
+    rhs = convert('bar')
+    result = lhs * rhs
+
+    assert_equal 'convert ( foo ) ( bar ) -compose multiply -composite miff:-',
+      result.to_s
+  end
+
+  def test_divide_operator_on_convert
+    lhs = convert('foo')
+    rhs = convert('bar')
+    result = lhs / rhs
+
+    assert_equal 'convert ( foo ) ( bar ) -compose divide -composite miff:-',
+      result.to_s
+  end
+
+  def test_and_operator_on_convert
+    lhs = convert('foo')
+    rhs = convert('bar')
+    result = lhs & rhs
+
+    assert_equal 'convert ( foo ) ( bar ) -alpha Set -compose dstin ' +
+      '-composite miff:-', result.to_s
+  end
+
+  def test_or_operator_on_convert
+    lhs = convert('foo')
+    rhs = convert('bar')
+    result = lhs | rhs
+
+    assert_equal 'convert ( foo ) ( bar ) -compose dstover -composite miff:-',
+      result.to_s
   end
 end

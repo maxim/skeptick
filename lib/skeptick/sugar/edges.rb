@@ -66,4 +66,7 @@ module Skeptick
   end
 
   include Sugar::Edges
+
+  class   Image::DslContext; include Sugar::Edges end
+  class Convert::DslContext; include Sugar::Edges end
 end
