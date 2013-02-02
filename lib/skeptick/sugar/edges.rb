@@ -37,10 +37,10 @@ module Skeptick
       end
 
       def torn_paper_image(image = nil, options = {}, &blk)
-        options = image.is_a?(Hash) ? image : options
+        options   = image.is_a?(Hash) ? image : options
 
-        spread = options[:spread] || 10
-        blur = options[:blur] || '0x3'
+        spread    = options[:spread]    || 1
+        blur      = options[:blur]      || '0x.7'
         threshold = options[:threshold] || 50
 
         if block_given?
@@ -53,10 +53,8 @@ module Skeptick
             apply :alpha, 'extract'
             apply '-virtual-pixel', 'black'
             apply :spread, spread
-            apply :blur, '0x3'
+            apply :blur, blur
             apply :threshold, "#{threshold}%"
-            apply :spread, 1
-            apply :blur, '0x.7'
           end
 
           apply :alpha, 'off'

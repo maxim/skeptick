@@ -28,7 +28,7 @@ module Skeptick
           if args.empty?
             '+swap'
           elsif args.size == 2
-            "-swap #{args.join(', ')}"
+            "-swap #{args.join(',')}"
           else
             raise ArgumentError,
               "wrong number of arguments (#{args.size} for 0, 2)"

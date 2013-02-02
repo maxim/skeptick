@@ -27,7 +27,7 @@ module Skeptick
         result << '%' if options[:percentage]
         result << '!' if options[:exact]
         result << '<' if options[:expand_only]
-        result << '>' if options[:reduce_only]
+        result << '>' if options[:shrink_only]
 
         result
       end
