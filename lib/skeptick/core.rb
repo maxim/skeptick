@@ -2,6 +2,7 @@ require 'skeptick/version'
 require 'skeptick/convert'
 require 'skeptick/image'
 require 'skeptick/chain'
+require 'skeptick/railtie' if defined?(Rails)
 
 module Skeptick
   class << self
