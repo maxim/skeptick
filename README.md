@@ -81,6 +81,11 @@ You can enable `debug_mode` to display every executed command in the log.
 Skeptick.debug_mode = true
 ```
 
+## Security Note
+
+*Never* insert any user input into any of Skeptick's commands. This should be
+obvious. Skeptick executes strings in your shell.
+
 ## DSL
 
 ![Skeptick Logo](https://raw.github.com/maxim/skeptick/master/logo.png)
