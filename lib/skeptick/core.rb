@@ -4,13 +4,31 @@ require 'skeptick/image'
 require 'skeptick/chain'
 
 module Skeptick
-  def self.log(text)
-    puts(text)
-    # Rails.logger.debug(text)
-  end
+  class << self
+    attr_writer :debug_mode,
+                :logger,
+                :logger_method,
+                :cd_path
 
-  def self.cd_path
-    # Rails.root
+    def log(message)
+      @logger ||= ::STDOUT
+
+      @logger_method ||=
+        if    @logger.respond_to?(:debug); :debug
+        elsif @logger.respond_to?(:puts);  :puts
+        else  :write
+        end
+
+      @logger.public_send(@logger_method, message)
+    end
+
+    def debug_mode?
+      @debug_mode
+    end
+
+    def cd_path
+      @cd_path
+    end
   end
 
   def convert(*args, &blk)

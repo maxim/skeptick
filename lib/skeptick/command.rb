@@ -1,5 +1,5 @@
 require 'shellwords'
-require 'open3'
+require 'posix/spawn'
 require 'skeptick/error'
 
 module Skeptick
@@ -13,6 +13,7 @@ module Skeptick
         command.run
       end
       alias_method :build, :execute
+      alias_method :run,   :execute
     end
 
     def initialize(command_obj)
@@ -25,23 +26,21 @@ module Skeptick
     alias_method :to_s, :command
 
     def run
-      Skeptick.log(@command_obj.parts.inspect)
-      Skeptick.log("Skeptick: #{command}".gsub(/(.{1,80})(\s+|\Z)/, "\\1\n"))
-
       opts = {}
       opts[:chdir] = Skeptick.cd_path if Skeptick.cd_path
 
-      out, err, status = Open3.capture3(command, opts)
-      puts out
-      err.each_line do |line|
-        puts line unless line =~ /\A\d{4}/
+      if Skeptick.debug_mode?
+        Skeptick.log("Skeptick Running: #{command}")
       end
 
-      if !status.success?
+      im_process = POSIX::Spawn::Child.new(command, opts)
+
+      if !im_process.success?
         raise ImageMagickError,
-          "ImageMagick error\nCommand: #{command}\nSTDERR:\n#{err}"
+          "ImageMagick error\nCommand: #{command}\nSTDERR:\n#{im_process.err}"
       end
-      out
+
+      im_process.status
     end
   end
 end
