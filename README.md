@@ -1,6 +1,6 @@
 # Skeptick
 
-Skeptick is an all-purpose DSL for building and running ImageMagic commands.
+Skeptick is an all-purpose DSL for building and running ImageMagick commands.
 It helps you build any transformations, from trivial resizes to complex mask
 algorithms and free drawing. In a nutshell, Skeptick is nothing more than a
 string manipulator and a process spawner. That's all it's meant to be. However,
