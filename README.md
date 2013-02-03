@@ -1,4 +1,4 @@
-# Skeptick: ImageMagick, Seriously
+# Skeptick: Better ImageMagick for Ruby
 
 [![Build Status](https://travis-ci.org/maxim/skeptick.png?branch=master)](https://travis-ci.org/maxim/skeptick)
 [![Code Climate](https://codeclimate.com/github/maxim/skeptick.png)](https://codeclimate.com/github/maxim/skeptick)
