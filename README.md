@@ -1,4 +1,6 @@
-# Skeptick
+# Skeptick: ImageMagick, Seriously
+
+[![Build Status](https://travis-ci.org/maxim/skeptick.png?branch=master)](https://travis-ci.org/maxim/skeptick)
 
 Skeptick is an all-purpose DSL for building and running ImageMagick commands.
 It helps you build any transformations, from trivial resizes to complex mask
