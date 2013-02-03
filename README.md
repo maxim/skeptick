@@ -68,11 +68,11 @@ require 'skeptick/sugar/composition'
 See the `lib/skeptick/sugar` dir for all the goodies.
 
 In Rails Skeptick will automatically use `Rails.logger` and `Rails.root` as
-`chdir`. You can also configure your own.
+`cd_path`. You can also configure your own.
 
 ```ruby
-Skeptick.logger = MyLogger.new
-Skeptick.chdir = '/some/dir'
+Skeptick.logger  = MyLogger.new
+Skeptick.cd_path = '/some/dir'
 ```
 
 You can enable `debug_mode` to display every executed command in the log.
