@@ -27,10 +27,10 @@ module Skeptick
 
     def run
       opts = {}
-      opts[:chdir] = Skeptick.cd_path if Skeptick.cd_path
+      opts[:chdir] = Skeptick.cd_path.to_s if Skeptick.cd_path
 
       if Skeptick.debug_mode?
-        Skeptick.log("Skeptick Running: #{command}")
+        Skeptick.log("Skeptick Command: #{command}")
       end
 
       im_process = POSIX::Spawn::Child.new(command, opts)
