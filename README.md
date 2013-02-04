@@ -388,7 +388,7 @@ Composition is sugar that adds `compose` shortcut to Skeptick's DSL.
 
 ```ruby
 command = compose(:multiply, 'a.png', 'b.png', to: 'out.png') do
-  with '-resize', '200x200'
+  set :resize, '200x200'
 end
 
 # OUTPUT:
@@ -416,7 +416,7 @@ following command does the same thing.
 command = compose(:multiply, to: 'out.png') do
   image 'a.png'
   image 'b.png'
-  with '-resize', '200x200'
+  set :resize, '200x200'
 end
 ```
 
@@ -429,7 +429,7 @@ command = convert('image1.png', to: 'result.png') do
     image 'image3.png[200x200]'
 
     convert 'image4.png' do
-      with '-unsharp', '0x5'
+      set :unsharp, '0x5'
     end
 
   end
@@ -534,19 +534,20 @@ act as `+swap` - which swaps last two images.
 
 Sometimes you might want to take a look at an intermediate image that's being
 generated inside parentheses, nested somewhere in your command. You can do so
-with the help of `write('/path/to/img.png')`.
+with the help of `save('/path/to/img.png')`, which is defined in
+`skeptick/sugar/debugging.rb`.
 
 ```ruby
 command = convert(to: 'result.png') do
   compose(:multiply, 'a.png', 'b.png') do
-    write('~/Desktop/debug.png')
+    save('~/Desktop/debug.png')
   end
 
   set '-resize', '200x200'
 end
 ```
 
-In this case the result of inner `compose` command will be written to desktop,
+In this case the result of inner `compose` command will be saved to desktop
 without affecting anything else. Again, this is a feature that already exists
 in ImageMagick, as becomes apparent from the resulting command.
 
@@ -562,17 +563,17 @@ piped commands.
 ```ruby
 command = chain(to: 'result.png') do
   compose(:hardlight, 'a.png', 'b.png') do
-    with '-brightness-contrast', '2x4'
+    set '-brightness-contrast', '2x4'
   end
 
   compose(:atop, 'c.png', :pipe)
 end
 
 # OUTPUT:
-convert
-  a.png b.png -compose hardlight -brightness-contrast 2x4 -composite miff:- |
-convert
-  c.png miff:- -compose atop -composite result.png
+# convert
+#   a.png b.png -compose hardlight -brightness-contrast 2x4 -composite miff:- |
+# convert
+#   c.png miff:- -compose atop -composite result.png
 ```
 
 Two things to note here. First of all, commands that are declared in the `chain`
