@@ -71,7 +71,7 @@ class GeometryTest < Skeptick::TestCase
       geometry(width: 100, height: 200, expand_only: true)
   end
 
-  def test_geometry_with_expand_only
+  def test_geometry_with_shrink_only
     assert_equal '100x200>',
       geometry(width: 100, height: 200, shrink_only: true)
   end
