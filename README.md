@@ -1,3 +1,12 @@
+### A note on project status
+
+If looking at commits makes you think that this project is abandoned, it's not. Skeptick is being used in our production ever since its inception, and it's working great. The reason there is no new activity is as follows.
+
+* It's really working great for us
+* Nobody is submitting issues
+
+So don't let the lack of git activity fool you. I have plans to blog about some interesting use cases for Skeptick and link to them from this README, stay tuned.
+
 # Skeptick: Better ImageMagick for Ruby
 
 [![Build Status](https://travis-ci.org/maxim/skeptick.png?branch=master)](https://travis-ci.org/maxim/skeptick)
