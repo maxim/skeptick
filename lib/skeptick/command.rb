@@ -25,10 +25,11 @@ module Skeptick
     end
     alias_method :to_s, :command
 
-    def run
+    def run(spawn_options = {})
       opts = {}
       opts[:chdir]   = Skeptick.cd_path.to_s if Skeptick.cd_path
       opts[:timeout] = Skeptick.timeout if Skeptick.timeout
+      opts.merge(spawn_options)
 
       if Skeptick.debug_mode?
         Skeptick.log("Skeptick Command: #{command}")
