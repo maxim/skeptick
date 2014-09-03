@@ -1,0 +1,8 @@
+v0.1.1
+
+* Add Skeptick.timeout (seconds) for limiting runtime of convert operations
+* Add ability to pass spawn options to `run` (e.g. override default timeout)
+
+v0.1.0
+
+* Initial release
