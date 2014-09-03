@@ -27,7 +27,8 @@ module Skeptick
 
     def run
       opts = {}
-      opts[:chdir] = Skeptick.cd_path.to_s if Skeptick.cd_path
+      opts[:chdir]   = Skeptick.cd_path.to_s if Skeptick.cd_path
+      opts[:timeout] = Skeptick.timeout if Skeptick.timeout
 
       if Skeptick.debug_mode?
         Skeptick.log("Skeptick Command: #{command}")

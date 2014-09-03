@@ -8,8 +8,9 @@ module Skeptick
   class << self
     attr_writer :debug_mode,
                 :logger,
-                :logger_method,
-                :cd_path
+                :logger_method
+
+    attr_accessor :cd_path, :timeout
 
     def log(message)
       @logger ||= ::STDOUT
@@ -25,10 +26,6 @@ module Skeptick
 
     def debug_mode?
       @debug_mode
-    end
-
-    def cd_path
-      @cd_path
     end
   end
 
