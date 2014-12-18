@@ -54,16 +54,16 @@ module Skeptick
 
     private
 
-      def build_parts
-        reset
-        DslContext.new(self).instance_eval(&@obj)
-        [*@prepends, @image, *@appends].compact
-      end
+    def build_parts
+      reset
+      DslContext.new(self).instance_eval(&@obj)
+      [*@prepends, @image, *@appends].compact
+    end
 
-      def reset
-        @image    = nil
-        @prepends = []
-        @appends  = []
-      end
+    def reset
+      @image    = nil
+      @prepends = []
+      @appends  = []
+    end
   end
 end

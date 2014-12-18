@@ -39,17 +39,18 @@ module Skeptick
     end
 
     private
-      def reset
-        @executables = []
-      end
 
-      def process_dsl
-        reset
-        DslContext.new(self).instance_eval(&@block)
+    def reset
+      @executables = []
+    end
 
-        if @executables.size > 0 && @to && piping?
-          @executables.last.destination = @to
-        end
+    def process_dsl
+      reset
+      DslContext.new(self).instance_eval(&@block)
+
+      if @executables.size > 0 && @to && piping?
+        @executables.last.destination = @to
       end
+    end
   end
 end

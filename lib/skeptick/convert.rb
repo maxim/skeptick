@@ -89,21 +89,22 @@ module Skeptick
     end
 
     private
-      def reset
-        @objects = []
-      end
 
-      def inner?
-        @inner
-      end
+    def reset
+      @objects = []
+    end
 
-      def wrap
-        @beginning = inner? ? '(' : 'convert'
-        @ending    = inner? ? ')' : @to || Chain::PIPE
-      end
+    def inner?
+      @inner
+    end
 
-      def parse_pipe(obj)
-        obj == :pipe ? Chain::PIPE : obj
-      end
+    def wrap
+      @beginning = inner? ? '(' : 'convert'
+      @ending    = inner? ? ')' : @to || Chain::PIPE
+    end
+
+    def parse_pipe(obj)
+      obj == :pipe ? Chain::PIPE : obj
+    end
   end
 end
