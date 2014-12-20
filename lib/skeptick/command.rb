@@ -4,26 +4,15 @@ require 'skeptick/error'
 
 module Skeptick
   class Command
-    module Executable
-      def command
-        Command.new(self)
-      end
+    attr_reader :shellwords
 
-      def execute
-        command.run
-      end
-      alias_method :build, :execute
-      alias_method :run,   :execute
+    def initialize(shellwords)
+      @shellwords = shellwords
     end
 
-    def initialize(command_obj)
-      @command_obj = command_obj
+    def to_s
+      shellwords.join(' ')
     end
-
-    def command
-      @command_obj.to_s.shellsplit.shelljoin
-    end
-    alias_method :to_s, :command
 
     def run(spawn_options = {})
       opts = {}
@@ -32,14 +21,14 @@ module Skeptick
       opts.merge(spawn_options)
 
       if Skeptick.debug_mode?
-        Skeptick.log("Skeptick Command: #{command}")
+        Skeptick.log("Skeptick Command: #{to_s}")
       end
 
-      im_process = POSIX::Spawn::Child.new(command, opts)
+      im_process = POSIX::Spawn::Child.new(*shellwords, opts)
 
       if !im_process.success?
         raise ImageMagickError,
-          "ImageMagick error\nCommand: #{command}\nSTDERR:\n#{im_process.err}"
+          "ImageMagick error\nCommand: #{to_s}\nSTDERR:\n#{im_process.err}"
       end
 
       im_process.status

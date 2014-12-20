@@ -1,4 +1,6 @@
-require_relative 'lib/skeptick'
+$: << 'lib'
+require 'skeptick'
+puts "Skeptick #{Skeptick::VERSION}"
 
 include Skeptick
 
@@ -7,18 +9,17 @@ image_size = '400x120'
 paper = rounded_corners_image(size: image_size, radius: 25) do
   set   :size, image_size
   image 'tile:granite:'
-  apply '-brightness-contrast', '38x-33'
-  apply :blur, '0x0.5'
+  set '-brightness-contrast', '38x-25'
+  set :blur, '0x0.5'
 end
 
 left, top = 8, 80
 text = image do
   canvas :none, size: '395x110'
-  font   'Handwriting - Dakota Regular'
+  font   'Handwriting - Dakota'
   set    :pointsize, 90
   set    :fill, 'gradient:#37e-#007'
-  write  'Skeptick', left: left, top: top
-  apply  :blur, '0x0.7'
+  text   'Skeptick', left: left, top: top
 end
 
 bezier = \
@@ -34,12 +35,12 @@ end
 
 result_path = "#{File.dirname(__FILE__)}/logo.png"
 
-torn = torn_paper_image(
+final = torn_paper_image \
   paper * (text + curve),
   spread: 50,
   blur:   '3x10'
-)
 
-logo = convert(torn, to: result_path)
-logo.build
+logo_script = convert(final, to: result_path)
+puts logo_script.to_s
+logo_script.run
 # system "osascript refresh_preview.scpt"

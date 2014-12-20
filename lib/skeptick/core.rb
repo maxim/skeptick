@@ -1,7 +1,5 @@
 require 'skeptick/version'
 require 'skeptick/convert'
-require 'skeptick/image'
-require 'skeptick/chain'
 require 'skeptick/railtie' if defined?(Rails)
 
 module Skeptick
@@ -34,10 +32,6 @@ module Skeptick
   end
 
   def image(*args, &blk)
-    Skeptick::Image.new(self, *args, &blk)
-  end
-
-  def chain(*args, &blk)
-    Skeptick::Chain.new(self, *args, &blk)
+    Skeptick::Convert.new(self, *args, &blk)
   end
 end

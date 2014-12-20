@@ -1,110 +1,92 @@
-require 'skeptick/helper'
-require 'skeptick/image'
-require 'skeptick/chain'
-require 'skeptick/convert/dsl_context'
+require 'skeptick/dsl_context'
 require 'skeptick/command'
 
 module Skeptick
   class Convert
-    include Command::Executable
+    attr_reader :context, :prepends, :subjects, :appends
 
-    attr_accessor :prepends, :appends
+    BINARY_PATH = 'convert'.freeze
+    DEFAULT_OUTPUT = 'miff:-'.freeze
 
     def initialize(context, *args, &blk)
       @context = context
-      @options = Helper.extract_options!(args)
-      @args    = args.map {|a| Image.new(@context, a)}
-      @block   = blk
-      @to      = parse_pipe(@options[:to])
-      @inner   = false
+      opts = args.last.is_a?(Hash) ? args.pop : {}
 
-      @beginning = nil
-      @ending    = nil
-      @prepends  = []
-      @appends   = []
+      @objects = [
+        @beginning = BINARY_PATH.dup,
+        @prepends  = setup_prepends,
+        @subjects  = setup_subjects,
+        @appends   = setup_appends,
+        @ending    = opts.fetch(:to) { DEFAULT_OUTPUT.dup }
+      ]
 
-      reset
-    end
-
-    def prepend(*args)
-      @prepends << Helper.process_args(*args)
-    end
-
-    def append(*args)
-      @appends << Helper.process_args(*args)
-    end
-
-    def set(*args)
-      @objects << Helper.process_args(*args)
-    end
-    alias_method :apply, :set
-    alias_method :with,  :set
-
-
-    def convert(*args, &blk)
-      Convert.new(@context, *args, &blk).tap do |c_obj|
-        @objects << Image.new(@context, c_obj)
+      args.each do |arg|
+        subjects << if arg.is_a?(Convert)
+          arg
+        else
+          Convert.new(@context).tap{ |c| c.subjects << arg }
+        end
       end
+
+      DslContext.new(self).instance_eval(&blk) if block_given?
     end
 
-    def image(obj = nil, &blk)
-      @objects << Image.new(@context, obj, &blk)
-    end
+    def run; command.run end
+    def to_s; shellwords.join(' ') end
+    def inspect; "#{self.class}(\"#{to_s}\")" end
+    def shellwords; tokens.map { |obj| token_to_str(obj) } end
+    def command; Command.new(shellwords) end
 
-    def destination=(to)
-      if inner?
-        raise 'cannot assign output to parentheses-wrapped image conversion'
+    protected
+
+    def nest!
+      add_parenth = (@subjects.size > 1) ||
+        (@subjects.size < 2 && (!appends.empty? || !prepends.empty?))
+
+      if add_parenth
+        @beginning.replace('(')
+        @ending.replace(')')
       else
-        @to = to
+        @beginning.clear
+        @ending.clear
       end
     end
 
-    def piping?
-      !inner? && parts.last == Chain::PIPE
-    end
-
-    def become_inner
-      @inner = true
-      self
-    end
-
-    def parts
-      reset
-      @objects = []
-      DslContext.new(self).instance_eval(&@block) if @block
-      wrap
-      [@beginning, *@prepends, *@args, *@objects, *@appends, @ending].compact
-    end
-
-    def to_s
-      parts.join(' ')
-    end
-
-    def inspect
-      "Skeptick::Convert(#{to_s})"
-    end
-
-    def process_method_missing(*args, &blk)
-      @context.send(*args, &blk)
+    def tokens
+      @objects.flatten.reject{ |obj| empty_string?(obj) }.map { |obj|
+        if obj.is_a?(Convert)
+          obj.nest!
+          obj.tokens
+        else
+          obj
+        end
+      }.flatten.tap do |array|
+        if array[1] == '(' && array[-2] == ')'
+          array.delete_at(1)
+          array.delete_at(-2)
+        end
+      end
     end
 
     private
 
-    def reset
-      @objects = []
+    def setup_prepends; [] end
+    def setup_subjects; [] end
+    def setup_appends;  [] end
+
+    def empty_string?(obj)
+      obj.is_a?(String) && obj.empty?
     end
 
-    def inner?
-      @inner
-    end
-
-    def wrap
-      @beginning = inner? ? '(' : 'convert'
-      @ending    = inner? ? ')' : @to || Chain::PIPE
-    end
-
-    def parse_pipe(obj)
-      obj == :pipe ? Chain::PIPE : obj
+    def token_to_str(obj)
+      case obj
+      when Symbol
+        "-#{obj}"
+      when Range
+        "#{obj.min}-#{obj.max}"
+      else
+        obj.to_s
+      end
     end
   end
 end

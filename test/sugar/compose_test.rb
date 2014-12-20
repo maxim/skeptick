@@ -1,11 +1,11 @@
 require_relative '../test_helper'
-require 'skeptick/sugar/composition'
+require 'skeptick/sugar/compose'
 
 # DISCLAIMER
 # These tests are not examples of proper usage of ImageMagick.
 # In fact, most of them are entirely invalid. The point is to
 # test the logic of building strings.
-class CompositionTest < Skeptick::TestCase
+class ComposeTest < Skeptick::TestCase
   include Skeptick
 
   def test_compose_with_blending
@@ -59,22 +59,22 @@ class CompositionTest < Skeptick::TestCase
   end
 
   def test_compose_with_ops
-    cmd = compose(:over) { with '-foo' }
+    cmd = compose(:over) { set '-foo' }
     assert_equal 'convert -foo -compose over -composite miff:-', cmd.to_s
   end
 
   def test_compose_with_concatenated_ops
-    cmd = compose(:over) { with '-foo', 'bar' }
+    cmd = compose(:over) { set '-foo', 'bar' }
     assert_equal 'convert -foo bar -compose over -composite miff:-', cmd.to_s
   end
 
   def test_compose_with_multiple_ops
-    cmd = compose(:over) { with '-foo'; with '+bar' }
+    cmd = compose(:over) { set '-foo'; set '+bar' }
     assert_equal 'convert -foo +bar -compose over -composite miff:-', cmd.to_s
   end
 
   def test_compose_with_multiple_concatenated_ops
-    cmd = compose(:over) { with '-foo', 'bar'; with '+baz', 'qux' }
+    cmd = compose(:over) { set '-foo', 'bar'; set '+baz', 'qux' }
     assert_equal 'convert -foo bar +baz qux -compose over -composite miff:-',
       cmd.to_s
   end
@@ -82,8 +82,8 @@ class CompositionTest < Skeptick::TestCase
   def test_compose_with_ops_inputs_and_output
     cmd = compose(:over, 'foo', 'bar', to: 'baz') do
       image 'qux'
-      with '+quux'
-      with '-corge', 'grault'
+      set '+quux'
+      set :corge, 'grault'
     end
 
     assert_equal 'convert foo bar qux +quux -corge grault -compose over ' +
@@ -92,7 +92,7 @@ class CompositionTest < Skeptick::TestCase
 
   def test_nested_compose
     cmd = compose(:over, to: 'baz') do
-      compose(:multiply, 'foo') { with 'bar' }
+      compose(:multiply, 'foo') { set 'bar' }
     end
 
     assert_equal 'convert ( foo bar -compose multiply -composite ) -compose ' +
@@ -101,7 +101,7 @@ class CompositionTest < Skeptick::TestCase
 
   def test_nested_compose_ignores_output
     cmd = compose(:over, to: 'baz') do
-      compose(:multiply, 'foo', to: 'nowhere') { with 'bar' }
+      compose(:multiply, 'foo', to: 'nowhere') { set 'bar' }
     end
 
     assert_equal 'convert ( foo bar -compose multiply -composite ) -compose ' +
@@ -111,12 +111,12 @@ class CompositionTest < Skeptick::TestCase
   def test_multi_image_nested_compose
     cmd = compose(:over, 'foo', to: 'bar') do
       compose(:multiply, 'qux') do
-        with '+asdf'
-        with '+fdsa'
+        set '+asdf'
+        set '+fdsa'
       end
 
       image 'bleh'
-      with '-resize'
+      set '-resize'
     end
 
     assert_equal 'convert foo ( qux +asdf +fdsa -compose multiply ' +
@@ -125,14 +125,14 @@ class CompositionTest < Skeptick::TestCase
 
   def test_compose_composition
     complex_image = compose(:over, 'qux') do
-      with '+asdf'
-      with '+fdsa'
+      set '+asdf'
+      set '+fdsa'
     end
 
     cmd = compose(:multiply, 'foo', to: 'bar') do
       image complex_image
       image 'bleh'
-      with '-resize'
+      set '-resize'
     end
 
     assert_equal 'convert foo ( qux +asdf +fdsa -compose over -composite ) ' +
@@ -140,81 +140,29 @@ class CompositionTest < Skeptick::TestCase
   end
 
   def test_compose_double_nesting_with_composition
-    complex_image = compose('foo', to: 'nowhere') do
-      compose('bar', to: 'nowhere') do
-        compose('baz') do
+    complex_image = compose(:multiply, to: 'nowhere') do
+      compose(:over, to: 'nowhere') do
+        compose(:hardlight) do
           image 'image1'
-          with '-option', 'qux'
+          set :option, 'qux'
         end
 
         image 'image2'
-        with '+option'
+        set '+option'
       end
     end
 
-    cmd = compose('image3') do
+    cmd = compose(:screen) do
       image complex_image
-      image 'image4'
-      with '-option', 'quux'
+      image 'image3'
+      set :option, 'quux'
     end
 
-    assert_equal 'convert ( ( ( image1 -option qux -compose baz -composite ' +
-      ') image2 +option -compose bar -composite ) -compose foo -composite ) ' +
-      'image4 -option quux -compose image3 -composite miff:-', cmd.to_s
-  end
-
-  def test_plus_operator_on_image
-    lhs = image('foo')
-    rhs = image('bar')
-    result = convert(lhs + rhs)
-
-    assert_equal 'convert ( foo bar -compose over -composite ) miff:-',
-      result.to_s
-  end
-
-  def test_minus_operator_on_image
-    lhs = image('foo')
-    rhs = image('bar')
-    result = convert(lhs - rhs)
-
-    assert_equal 'convert ( foo bar -compose dstout -composite ) miff:-',
-      result.to_s
-  end
-
-  def test_multiply_operator_on_image
-    lhs = image('foo')
-    rhs = image('bar')
-    result = convert(lhs * rhs)
-
-    assert_equal 'convert ( foo bar -compose multiply -composite ) miff:-',
-      result.to_s
-  end
-
-  def test_divide_operator_on_image
-    lhs = image('foo')
-    rhs = image('bar')
-    result = convert(lhs / rhs)
-
-    assert_equal 'convert ( foo bar -compose divide -composite ) miff:-',
-      result.to_s
-  end
-
-  def test_and_operator_on_image
-    lhs = image('foo')
-    rhs = image('bar')
-    result = convert(lhs & rhs)
-
-    assert_equal 'convert ( foo bar -alpha Set -compose dstin -composite ) ' +
-      'miff:-', result.to_s
-  end
-
-  def test_or_operator_on_image
-    lhs = image('foo')
-    rhs = image('bar')
-    result = convert(lhs | rhs)
-
-    assert_equal 'convert ( foo bar -compose dstover -composite ) miff:-',
-      result.to_s
+    assert_equal 'convert ( '\
+      '( ( image1 -option qux -compose hardlight -composite ) '\
+      'image2 +option -compose over -composite '\
+    ') -compose multiply -composite ) '\
+    'image3 -option quux -compose screen -composite miff:-', cmd.to_s
   end
 
   def test_plus_operator_on_convert
@@ -222,7 +170,7 @@ class CompositionTest < Skeptick::TestCase
     rhs = convert('bar')
     result = lhs + rhs
 
-    assert_equal 'convert ( foo ) ( bar ) -compose over -composite miff:-',
+    assert_equal 'convert foo bar -compose over -composite miff:-',
       result.to_s
   end
 
@@ -231,7 +179,7 @@ class CompositionTest < Skeptick::TestCase
     rhs = convert('bar')
     result = lhs - rhs
 
-    assert_equal 'convert ( foo ) ( bar ) -compose dstout -composite miff:-',
+    assert_equal 'convert foo bar -compose dstout -composite miff:-',
       result.to_s
   end
 
@@ -240,7 +188,7 @@ class CompositionTest < Skeptick::TestCase
     rhs = convert('bar')
     result = lhs * rhs
 
-    assert_equal 'convert ( foo ) ( bar ) -compose multiply -composite miff:-',
+    assert_equal 'convert foo bar -compose multiply -composite miff:-',
       result.to_s
   end
 
@@ -249,7 +197,7 @@ class CompositionTest < Skeptick::TestCase
     rhs = convert('bar')
     result = lhs / rhs
 
-    assert_equal 'convert ( foo ) ( bar ) -compose divide -composite miff:-',
+    assert_equal 'convert foo bar -compose divide -composite miff:-',
       result.to_s
   end
 
@@ -258,7 +206,7 @@ class CompositionTest < Skeptick::TestCase
     rhs = convert('bar')
     result = lhs & rhs
 
-    assert_equal 'convert ( foo ) ( bar ) -alpha Set -compose dstin ' +
+    assert_equal 'convert foo bar -alpha Set -compose dstin ' +
       '-composite miff:-', result.to_s
   end
 
@@ -267,7 +215,7 @@ class CompositionTest < Skeptick::TestCase
     rhs = convert('bar')
     result = lhs | rhs
 
-    assert_equal 'convert ( foo ) ( bar ) -compose dstover -composite miff:-',
+    assert_equal 'convert foo bar -compose dstover -composite miff:-',
       result.to_s
   end
 end

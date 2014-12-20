@@ -19,4 +19,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'posix-spawn', '~> 0.3.6'
   gem.add_development_dependency 'rake', '>= 0.9.2'
+  gem.add_development_dependency 'pry'
 end
