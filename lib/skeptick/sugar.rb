@@ -1,5 +1,5 @@
 require 'skeptick/sugar/compose'
-require 'skeptick/sugar/save'
+require 'skeptick/sugar/write'
 require 'skeptick/sugar/draw'
 require 'skeptick/sugar/canvas'
 require 'skeptick/sugar/font'

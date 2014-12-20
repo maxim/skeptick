@@ -1,6 +1,6 @@
 module Skeptick
   class DslContext
-    def save(path)
+    def write(path)
       append(:write, path)
     end
   end
