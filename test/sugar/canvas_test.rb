@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/canvas'
 
-class DrawingTest < Skeptick::TestCase
+class CanvasTest < Skeptick::TestCase
   include Skeptick
 
   def test_canvas_in_convert_with_size

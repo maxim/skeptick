@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/delete'
 
-class SequenceManipulationTest < Skeptick::TestCase
+class DeleteTest < Skeptick::TestCase
   include Skeptick
 
   def test_delete_without_args

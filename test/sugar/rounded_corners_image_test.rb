@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/rounded_corners_image'
 
-class EdgesTest < Skeptick::TestCase
+class RoundedCornersImageTest < Skeptick::TestCase
   include Skeptick
 
   def test_rounded_corners_image_without_block_and_radius

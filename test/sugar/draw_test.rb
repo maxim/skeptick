@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/draw'
 
-class DrawingTest < Skeptick::TestCase
+class DrawTest < Skeptick::TestCase
   include Skeptick
 
   def test_draw_in_convert

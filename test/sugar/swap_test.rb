@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/swap'
 
-class SequenceManipulationTest < Skeptick::TestCase
+class SwapTest < Skeptick::TestCase
   include Skeptick
 
   def test_swap_without_args

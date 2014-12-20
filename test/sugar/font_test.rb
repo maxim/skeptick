@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/font'
 
-class DrawingTest < Skeptick::TestCase
+class FontTest < Skeptick::TestCase
   include Skeptick
 
   def test_font_in_convert

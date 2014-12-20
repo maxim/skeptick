@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/text'
 
-class DrawingTest < Skeptick::TestCase
+class TextTest < Skeptick::TestCase
   include Skeptick
 
   def test_text_in_convert_without_left_top

@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/torn_paper_image'
 
-class EdgesTest < Skeptick::TestCase
+class TornPaperImageTest < Skeptick::TestCase
   include Skeptick
 
   def test_torn_paper_image_without_block_spread_blur_threshold

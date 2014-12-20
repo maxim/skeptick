@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 require 'skeptick/sugar/clone'
 
-class SequenceManipulationTest < Skeptick::TestCase
+class CloneTest < Skeptick::TestCase
   include Skeptick
 
   def test_clone_without_args
