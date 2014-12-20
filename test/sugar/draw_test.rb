@@ -6,6 +6,6 @@ class DrawTest < Skeptick::TestCase
 
   def test_draw_in_convert
     cmd = convert { draw 'fill none bezier 1,2 3,4' }
-    assert_equal 'convert -draw fill\ none\ bezier\ 1,2\ 3,4 miff:-', cmd.to_s
+    assert_equal 'convert -draw fill none bezier 1,2 3,4 miff:-', cmd.to_s
   end
 end
