@@ -3,8 +3,8 @@ v0.2.0
 * No more aliased keywords (with, apply) only set, append, prepend
 * No more aliases: build, execute; only run
 * All strings are now escaped, so make sure you split arguments to `set`
-# Keyword `write` renamed to text (consistent with ImageMagick)
-# Keyword `save` is renamed to `write` (consistent with ImageMagick)
+* Keyword `write` renamed to text (consistent with ImageMagick)
+* Keyword `save` is renamed to `write` (consistent with ImageMagick)
 * No more piping support (no point, use composition instead)
 * Blocks are now evaluated upon declaration (still without running the command)
 * It's now ok to assign convert to a variable that's also used inside the block
