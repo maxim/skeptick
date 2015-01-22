@@ -1,3 +1,7 @@
+v0.2.1
+
+* Fix a nasty bug where option 'to' in convert(to: 'foo') could get clobbered
+
 v0.2.0
 
 * No more aliased keywords (with, apply) only set, append, prepend
