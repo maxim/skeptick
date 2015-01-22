@@ -269,4 +269,19 @@ class ConvertTest < Skeptick::TestCase
     assert_equal 'convert -setting ( foo -baz ) -operation miff:-',
       cmd.to_s
   end
+
+  def test_convert_doesnt_clobber_passed_in_destination_arg
+    filename = 'foo.png'
+
+    convert do
+      convert(to: filename) do
+        image 'a'
+        set :foo
+      end
+
+      image 'b'
+    end.to_s
+
+    assert_equal 'foo.png', filename
+  end
 end

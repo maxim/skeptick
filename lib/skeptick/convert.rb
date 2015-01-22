@@ -17,7 +17,7 @@ module Skeptick
         @prepends  = setup_prepends,
         @subjects  = setup_subjects,
         @appends   = setup_appends,
-        @ending    = opts.fetch(:to) { DEFAULT_OUTPUT.dup }
+        @ending    = opts.fetch(:to){ DEFAULT_OUTPUT }.dup
       ]
 
       args.each do |arg|
