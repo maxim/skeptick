@@ -179,6 +179,9 @@ doesn't care.
 # Works the same way:
 set '-resize', '100x100'
 set :resize, '100x100'
+
+# bad, won't work
+set '-resize 100x100'
 ```
 
 Watch out for the fact that it shell-escapes every argument, so if you write `set '-resize foo'`, you will get an error, since the space will be escaped, and shell would treat that whole string as single word.`
