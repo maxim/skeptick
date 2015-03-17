@@ -127,7 +127,7 @@ command = convert('image1.png', to: 'image2.png') do
     set :resize, '100x100' # resize image1's clone in memory
   end
 
-  set '-compose over'
+  set '-compose', 'over'
   set '-composite'
 end
 
@@ -145,7 +145,7 @@ by passing it to `convert` in place of an image filepath.
 
 ```ruby
 new_command = convert(command, to: 'whatever.png') do
-  set '-resize 300x300'
+  set '-resize', '300x300'
 end
 
 # OUTPUT:
@@ -176,11 +176,12 @@ automatically becomes a string with dash in front of it. Speaking of set.
 doesn't care.
 
 ```ruby
-# All same thing
-set '-resize 100x100'
+# Works the same way:
 set '-resize', '100x100'
 set :resize, '100x100'
 ```
+
+Watch out for the fact that it shell-escapes every argument, so if you write `set '-resize foo'`, you will get an error, since the space will be escaped, and shell would treat that whole string as single word.`
 
 In addition to `set` there are also `prepend` and `append` to put stuff at the
 beginning or end of a command, but they are rarely useful, and mostly for
